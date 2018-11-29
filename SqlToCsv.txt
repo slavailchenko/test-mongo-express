@@ -1,0 +1,25 @@
+COPY (
+SELECT * FROM suppliers
+) TO 'D:/test-mongo-express/data/suppliers.csv' WITH (FORMAT CSV, HEADER TRUE, DELIMITER E'\t');
+
+COPY (
+SELECT clients.*, rateclients.status, rateclients.discount, registrationclients.status_reg
+FROM clients, rateclients, registrationclients
+WHERE clients.id_rate = rateclients.id AND
+clients.id_registration = registrationclients.id
+) TO 'D:/test-mongo-express/data/clients.csv' WITH (FORMAT CSV, HEADER TRUE, DELIMITER E'\t');
+
+COPY (
+SELECT products.*, subcategories.name_sub_category, 
+brands.brand_name, availabilities.status, conditions.state, 
+suppliers.company, warranties.days
+FROM  products, subcategories, brands, availabilities, 
+conditions, suppliers, warranties
+WHERE products.sub_category_id = subcategories.id AND
+products.brand_id = brands.id AND
+products.availability_id = availabilities.id AND
+products.condition_id = conditions.id AND
+products.supplier_id = suppliers.id AND
+products.warranty_id = warranties.id
+) TO 'D:/test-mongo-express/data/products.csv' WITH (FORMAT CSV, HEADER TRUE, DELIMITER E'\t');
+

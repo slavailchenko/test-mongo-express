@@ -1,9 +1,9 @@
 const ServerError = require('../lib/errors');
 const productModel = require ('../models/products.model');
 
-const fields = ['id', 'title', 'article', 'description', 'price', 
-				'url', 'name_sub_category', 'brand_name', 'condition',
-				'state', 'warranty', 'company'];
+const fields = ['title', 'article', 'description', 'price', 
+				'url', 'name_sub_category', 'brand_name', 'status',
+				'state', 'days', 'supplier_id'];
 
 module.exports = {
 
@@ -19,5 +19,5 @@ module.exports = {
 				})
 			};
 		}).catch(next); 
-	}
+	},
 }

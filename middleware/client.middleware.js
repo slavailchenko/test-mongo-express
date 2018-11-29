@@ -26,3 +26,4 @@ module.exports = {
 		}).
 		catch(next); 
 	}
+}

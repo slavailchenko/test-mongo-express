@@ -4,12 +4,17 @@ const { Schema } = mongoose;
 const { ObjectId } = Schema.Types;
 
 const valuesCategories = {
-    values: ['Mobile technic', 'Tablet'],
+    values: ['Phones', 'Tablet'],
     message: `Please select correct value`
 };
 
 const valuesBrands = {
     values: ['Apple', 'Samsung', 'Xiaomi', 'Sony'],
+    message: `Please select correct value`
+};
+
+const valuesStatus = {
+    values: ['availability', 'pre-order', 'not availability'],
     message: `Please select correct value`
 };
 
@@ -19,11 +24,6 @@ const valuesConditions = {
 };
 
 const productSchema = new Schema({
-    id: {
-        type: Number,
-        required: true,
-        trim: true
-    },
     title: {
         type: String,
         required: true,
@@ -46,7 +46,6 @@ const productSchema = new Schema({
     },  
     url: {
     	type: String,
-        required: false,
         validate: {
             validator: valid.isURL,
             message: 'Is not a valid URL',
@@ -66,19 +65,25 @@ const productSchema = new Schema({
         enum: valuesBrands,
         trim: true
     },
-    condition: {
+    status: {
+        type: String,
+        required: true,
+        enum: valuesStatus,
+        trim: true
+    },
+    state: {
         type: String,
         required: true,
         enum: valuesConditions,
         trim: true
     },
-    warranty: {
+    days: {
         type: Number,
         required: true,
         trim: true
     },
-    supplier: {
-        type: ObjectId,
+    supplier_id: {
+        type: Schema.ObjectId,
         ref: 'supplier',
         trim: true
     }
@@ -87,5 +92,6 @@ const productSchema = new Schema({
     timestamps: true,
     versionKey: false
 });
+
 
 module.exports = mongoose.model('product', productSchema);
