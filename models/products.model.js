@@ -26,11 +26,13 @@ const valuesConditions = {
 const productSchema = new Schema({
     title: {
         type: String,
+        index: true,
         required: true,
         trim: true
     },
     article: {
         type: String,
+        index: true,
         required: true,
         trim: true
     },

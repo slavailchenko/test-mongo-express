@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const clientsRouter = require('./route/clients.route');
 const supplierRouter = require('./route/suppliers.route');
 const productsRouter = require('./route/products.route');
+const ordersRouter = require('./route/orders.route');
 const config = require('./config/app.config');
 const log = require('./service/log.service');
 const ServerError = require('./lib/errors');
@@ -21,6 +22,7 @@ mongoose.connect().then(()=> new Promise ((res, rej) => {
 	app.use('/clients', clientsRouter);
 	app.use('/suppliers', supplierRouter);
 	app.use('/products', productsRouter);
+	app.use('/orders', ordersRouter);
 
 	app.use(ServerError.handle404Error);
 	app.use(ServerError.errorLogger);

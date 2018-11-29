@@ -1,0 +1,9 @@
+
+> db.clients.createIndex({email: 1, last_name: 1}, {unique: true})
+{
+        "createdCollectionAutomatically" : true,
+        "numIndexesBefore" : 1,
+        "numIndexesAfter" : 2,
+        "ok" : 1
+}
+>

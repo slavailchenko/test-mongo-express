@@ -25,12 +25,13 @@ const clientSchema = new Schema({
     },
     last_name: {
         type: String,
+        index: true,
         required: true,
         trim: true
     },    
     email: {
         type: String,        
-        unique: true,
+        index: {unique: true},
         required: 'Email address is required',
         validate: [validateEmail, 'Please fill a valid email address'],
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 

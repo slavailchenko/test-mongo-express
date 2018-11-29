@@ -6,6 +6,7 @@ const { ObjectId } = Schema.Types;
 const supplierSchema = new Schema({
     company: {
         type: String,
+        index: true,
         required: true,
         trim: true
     },
