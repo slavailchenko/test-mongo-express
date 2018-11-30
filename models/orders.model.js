@@ -54,10 +54,14 @@ const orderSchema = new Schema({
 
 orderSchema.pre('save', function (next) {
 
-    productModel.find({}, (err, docs) => {
+    productModel.find({
+        '_id': { $in: this.productIds }
+    }, (err, docs) => {
 
         let arr = docs.map(item => item._id.toString()),
-            isCheck = false;
+        isCheck = false;
+
+        console.log(arr);
         
         for (let i=0; i<this.productIds.length; i++) {
             if (arr.indexOf(this.productIds[i].toString()) >= 0) {
@@ -67,18 +71,19 @@ orderSchema.pre('save', function (next) {
                 break;
             }
         }
-
-        (isCheck) ? next() : next(new Error(`ProductId don't exist in products`));
+        (isCheck) ? next() : next (new Error(`ProductId don't exist in products`));
     });
 
 });
 
 orderSchema.pre('save', function (next) {
 
-    clientModel.find({}, (err, docs) => {
-        let arr = docs.map(item => item._id.toString());
-        (arr.indexOf(this.client_id.toString()) >= 0) ? next() : next(new Error(`Client ${this.client_id} don't exist in clients`));
+    clientModel.findById({
+        _id: this.client_id.toString()
+    }, (err, docs) => {
+        (docs._id.toString() == this.client_id) ? next() : next (new Error(`Client ${this.client_id} don't exist in clients`));
     });
+
 });
 
 module.exports = mongoose.model('order', orderSchema);
