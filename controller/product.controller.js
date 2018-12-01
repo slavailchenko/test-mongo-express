@@ -29,8 +29,8 @@ module.exports = {
 
   getAllProducts: (req, res, next) => {
     const query = req.query.title || '';
-    productModel.find({ title: { $regex: query.toLowerCase().trim(),  $options: 'ig' }}).
-    then(products => {
+    productModel.find({ title: { $regex: query.toLowerCase().trim(),  $options: 'ig' }})
+    .then(products => {
       if (!products.length) throw new ServerError(404, 'Products not founded');
       res.json(products);
     })
@@ -38,8 +38,8 @@ module.exports = {
   },
 
   getProductById: (req, res, next) => {
-    productModel.findById({_id: req.params.id}).
-    then(product => {
+    productModel.findById({_id: req.params.id})
+    .then(product => {
       res.json (product);
     }).catch(next);
   },
@@ -49,25 +49,25 @@ module.exports = {
     redis.getAsync(query)
     .then((reply) => {
       if (reply) {
+        reply = JSON.parse(reply);
         res.json(reply);
-        console.log(reply);
       }
       else { 
         productModel.find({ title: { $regex: query.toLowerCase().trim(),  $options: 'ig' }}).
         then(product => {
-          console.log('product');
-          console.log(product);
           if (!product) return next (ServerError(404, 'Products not founded'));
+          res.json(product);
           redis.setAsync(query, JSON.stringify(product))
-          .then(result => res.json(result));
+          .then(result => console.log(`Key "${query}" added in Redis cache`))
+          .catch(next);
         })
       }
     }).catch(next);
   },
 
   getCompany: (req, res, next) => {
-    productModel.findOne({_id: req.params.id}).
-    populate('supplier_id', 'company manager')
+    productModel.findOne({_id: req.params.id})
+    .populate('supplier_id', 'company manager')
     .exec((err, supplier) => {
       if (err) return next (ServerError(404, 'Supplier not founded'));
       res.json (`Product with id=${req.params.id} provide company ${supplier.supplier_id.company}, manager ${supplier.supplier_id.manager}`);

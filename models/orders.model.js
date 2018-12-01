@@ -61,8 +61,6 @@ orderSchema.pre('save', function (next) {
         let arr = docs.map(item => item._id.toString()),
         isCheck = false;
 
-        console.log(arr);
-        
         for (let i=0; i<this.productIds.length; i++) {
             if (arr.indexOf(this.productIds[i].toString()) >= 0) {
                 isCheck = true;
@@ -71,6 +69,7 @@ orderSchema.pre('save', function (next) {
                 break;
             }
         }
+        
         (isCheck) ? next() : next (new Error(`ProductId don't exist in products`));
     });
 
