@@ -33,8 +33,7 @@ module.exports = {
     .then(products => {
       if (!products.length) throw new ServerError(404, 'Products not founded');
       res.json(products);
-    })
-    .catch(next);
+    }).catch(next);
   },
 
   getProductById: (req, res, next) => {
@@ -44,7 +43,7 @@ module.exports = {
     }).catch(next);
   },
 
-  getProductByTitleCash: (req, res, next) => {
+  getProductByTitleCache: (req, res, next) => {
     const query = req.query.title || '';
     redis.getAsync(query)
     .then((reply) => {
