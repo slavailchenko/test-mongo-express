@@ -30,7 +30,7 @@ module.exports = {
   updateSupplier: (req, res, next) => {
     supplierModel.findByIdAndUpdate({_id: req.params.id}, req.body)
     .then(supplier => {
-      res.status(201).json(`Supplier with id=${req.params.id} updated`);
+      res.status(200).json(`Supplier with id=${req.params.id} updated`);
     }).catch(next);
   },
 

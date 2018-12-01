@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const products = require ('../controller/product.controller');
 
-router.get('/', products.getAllProducts);
+router.get('/', products.getProductByTitleCash);
 router.get('/:id', products.getProductById);
 router.get('/:id/supplier', products.getCompany);
 router.post('/', products.newProduct);

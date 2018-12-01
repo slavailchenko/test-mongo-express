@@ -29,14 +29,14 @@ module.exports = {
   updateClient: (req, res, next) => {
     clientModel.findByIdAndUpdate({_id: req.params.id}, req.body)
     .then(client => {
-      res.status(201).json(`Client with id=${req.params.id} updated`);
+      res.status(200).json(`Client with id=${req.params.id} updated`);
     }).catch(next);
   },
 
   someUpdateClient: (req, res, next) => {
     clientModel.update({_id: req.params.id}, {$set: req.body})
     .then(client => {
-      res.status(201).json(`Client with id=${req.params.id} updated`);
+      res.status(200).json(`Client with id=${req.params.id} updated`);
     }).catch(next);
   },
 

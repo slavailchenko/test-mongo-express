@@ -3,6 +3,19 @@ const supplierModel = require ('../models/suppliers.model');
 const ServerError = require('../lib/errors');
 const log = require('../service/log.service');
 
+const redisClient = require('redis').createClient;
+const redis = redisClient();
+const bluebird = require('bluebird');
+
+redis.on('connect', () => {
+  console.log('Redis client connected');
+  bluebird.promisifyAll(redis)
+});
+
+redis.on('error', function (err) {
+  console.log('Something went wrong ' + err);
+});
+
 module.exports = {
 
   newProduct: (req, res, next) => {
@@ -31,6 +44,27 @@ module.exports = {
     }).catch(next);
   },
 
+  getProductByTitleCash: (req, res, next) => {
+    const query = req.query.title || '';
+    redis.getAsync(query)
+    .then((reply) => {
+      if (reply) {
+        res.json(reply);
+        console.log(reply);
+      }
+      else { 
+        productModel.find({ title: { $regex: query.toLowerCase().trim(),  $options: 'ig' }}).
+        then(product => {
+          console.log('product');
+          console.log(product);
+          if (!product) return next (ServerError(404, 'Products not founded'));
+          redis.setAsync(query, JSON.stringify(product))
+          .then(result => res.json(result));
+        })
+      }
+    }).catch(next);
+  },
+
   getCompany: (req, res, next) => {
     productModel.findOne({_id: req.params.id}).
     populate('supplier_id', 'company manager')
@@ -46,7 +80,7 @@ module.exports = {
       if (!supplier) throw new ServerError(404, 'Supplier not founded');
       productModel.update({_id: req.params.id}, req.body)
       .then(product => {
-        res.status(201).json(`Product with id=${req.params.id} updated`)
+        res.status(200).json(`Product with id=${req.params.id} updated`)
       })
     }).catch(next);
   },
