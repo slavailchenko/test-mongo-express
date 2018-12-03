@@ -16,8 +16,8 @@ module.exports = {
     orderModel.find({})
     .then(orders => {
       if (!orders.length) throw new ServerError(404, 'Orders not founded');
-        res.json(orders);
-      })
+      res.json(orders);
+    })
     .catch(next);
   },
 

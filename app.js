@@ -33,12 +33,10 @@ mongoose.connect().then(()=> new Promise ((res, rej) => {
     if (err) {
       console.log('Server creation error: ' + err);
       return;
-    }
-    console.log(`server started on ${config.server.host}:${config.server.port}`);
-  });
+  }
+  console.log(`server started on ${config.server.host}:${config.server.port}`);
+});
   res();
 })
 )
 .catch((err) => console.log(err));
-
-module.exports = app;

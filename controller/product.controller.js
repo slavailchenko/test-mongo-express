@@ -12,7 +12,7 @@ redis.on('connect', () => {
   bluebird.promisifyAll(redis)
 });
 
-redis.on('error', function (err) {
+redis.on('error', (err) => {
   console.log('Something went wrong ' + err);
 });
 
