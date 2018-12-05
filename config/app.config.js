@@ -10,6 +10,7 @@ module.exports = {
             }
         }
     },
+    node_env: process.env.NODE_ENV || 'production',
     database: {
         uri: 'mongodb://localhost:27017/shop',
         promise: Promise,

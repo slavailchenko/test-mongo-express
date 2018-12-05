@@ -1,11 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+
 const clientsRouter = require('./route/clients.route');
 const supplierRouter = require('./route/suppliers.route');
 const productsRouter = require('./route/products.route');
 const ordersRouter = require('./route/orders.route');
 const config = require('./config/app.config');
-const log = require('./service/log.service');
+const log = require('./service/log.service')(module);
 const ServerError = require('./lib/errors');
 const mongoose = require('./lib/mongoose');
 
@@ -14,11 +15,9 @@ let app;
 mongoose.connect().then(()=> new Promise ((res, rej) => {
 	
   app = express ();
-
   app.use(bodyParser.json({limit: "50mb"}));
-  app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
-
-  app.use(log.logger);
+  app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:500}));
+  app.disable('x-powered-by');
 
   app.use('/clients', clientsRouter);
   app.use('/suppliers', supplierRouter);
@@ -31,12 +30,12 @@ mongoose.connect().then(()=> new Promise ((res, rej) => {
 
   app.listen(config.server.port, config.server.host, err => {
     if (err) {
-      console.log('Server creation error: ' + err);
+      log.error(`Server creation error: ${err}`);
       return;
   }
-  console.log(`server started on ${config.server.host}:${config.server.port}`);
+  log.info(`server started on ${config.server.host}:${config.server.port}`);
 });
   res();
 })
 )
-.catch((err) => console.log(err));
+.catch((err) => log.error(err.message));

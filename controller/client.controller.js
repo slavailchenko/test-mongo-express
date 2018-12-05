@@ -22,13 +22,16 @@ module.exports = {
   getClientById: (req, res, next) => {
     clientModel.findById({_id: req.params.id})
     .then(client => {
+      if (!client) throw new ServerError(404, 'Client not found');
       res.json(client);
-    }).catch(next);
+    })
+    .catch(next);
   },
 
   updateClient: (req, res, next) => {
     clientModel.findByIdAndUpdate({_id: req.params.id}, req.body)
     .then(client => {
+      if (!client) throw new ServerError(404, 'Client not found');
       res.status(200).json(`Client with id=${req.params.id} updated`);
     }).catch(next);
   },
@@ -36,6 +39,7 @@ module.exports = {
   someUpdateClient: (req, res, next) => {
     clientModel.update({_id: req.params.id}, {$set: req.body})
     .then(client => {
+      if (!client) throw new ServerError(404, 'Client not found');
       res.status(200).json(`Client with id=${req.params.id} updated`);
     }).catch(next);
   },
@@ -43,6 +47,7 @@ module.exports = {
   removeClient: (req, res, next) => {
     clientModel.findByIdAndRemove({_id: req.params.id})
     .then(client => {
+      if (!client) throw new ServerError(404, 'Client not found');
       res.json(`Client with id=${req.params.id} deleted`);
     }).catch(next);
   }

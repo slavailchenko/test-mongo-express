@@ -1,19 +1,19 @@
 const productModel = require ('../models/products.model');
 const supplierModel = require ('../models/suppliers.model');
 const ServerError = require('../lib/errors');
-const log = require('../service/log.service');
+const log = require('../service/log.service')(module);
 
 const redisClient = require('redis').createClient;
 const redis = redisClient();
 const bluebird = require('bluebird');
 
 redis.on('connect', () => {
-  console.log('Redis client connected');
+  log.info('Redis client connected');
   bluebird.promisifyAll(redis)
 });
 
 redis.on('error', (err) => {
-  console.log('Something went wrong ' + err);
+  log.error('Something went wrong ' + err);
 });
 
 module.exports = {
@@ -39,6 +39,7 @@ module.exports = {
   getProductById: (req, res, next) => {
     productModel.findById({_id: req.params.id})
     .then(product => {
+      if (!product) throw new ServerError(404, 'Product not found');
       res.json (product);
     }).catch(next);
   },
@@ -79,6 +80,7 @@ module.exports = {
       if (!supplier) throw new ServerError(404, 'Supplier not founded');
       productModel.update({_id: req.params.id}, req.body)
       .then(product => {
+        if (!product) throw new ServerError(404, 'Product not found');
         res.status(200).json(`Product with id=${req.params.id} updated`)
       })
     }).catch(next);
@@ -87,6 +89,7 @@ module.exports = {
   removeProduct: (req, res, next) => {
     productModel.findByIdAndRemove({_id: req.params.id})
     .then(product => {
+      if (!product) throw new ServerError(404, 'Product not found');
       res.json(`Product with id=${req.params.id} deleted`);
     }).catch(next);
   }

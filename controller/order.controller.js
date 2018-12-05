@@ -34,7 +34,7 @@ module.exports = {
         select: 'first_name last_name email phone'
       }])
       .exec((err, result) => {
-        if (err) return next (ServerError(404, 'Order not founded'));
+        if (err) return next (ServerError(404, 'Order not found'));
           res.json (result);
         });
   },
@@ -42,6 +42,7 @@ module.exports = {
   updateOrder: (req, res, next) => {
     orderModel.findByIdAndUpdate({_id: req.params.id}, req.body)
     .then(order => {
+      if (!order) throw new ServerError(404, 'Order not found');
       res.json(`Order with id=${req.params.id} updated`);
     }).catch(next);
   },
@@ -49,6 +50,7 @@ module.exports = {
   removeOrder: (req, res, next) => {
     orderModel.findOneAndDelete({_id: req.params.id})
     .then(order => {
+      if (!order) throw new ServerError(404, 'Order not found');
       res.json(`Order with id=${req.params.id} deleted`);
     })
     .catch(next);

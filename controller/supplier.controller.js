@@ -23,6 +23,7 @@ module.exports = {
   getSupplierById: (req, res, next) => {
     supplierModel.findById({_id: req.params.id})
     .then(supplier => {
+      if (!supplier) throw new ServerError(404, 'Supplier not found');
       res.json(supplier);
     }).catch(next);
   },
@@ -30,6 +31,7 @@ module.exports = {
   updateSupplier: (req, res, next) => {
     supplierModel.findByIdAndUpdate({_id: req.params.id}, req.body)
     .then(supplier => {
+      if (!supplier) throw new ServerError(404, 'Supplier not found');
       res.status(200).json(`Supplier with id=${req.params.id} updated`);
     }).catch(next);
   },
@@ -37,6 +39,7 @@ module.exports = {
   removeSupplier: (req, res, next) => {
     supplierModel.findByIdAndRemove({_id: req.params.id})
     .then(supplier => {
+      if (!supplier) throw new ServerError(404, 'Supplier not found');
       res.json(`Supplier with id=${req.params.id} deleted`);
     }).catch(next);
   }
