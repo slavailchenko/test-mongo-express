@@ -30,7 +30,7 @@ function myLogger(module) {
 			filename: 'error.log',
 			label: getFilePath(module),
 			handleException: true,
-			json: false,
+			json: true,
 			colorize: true
 		})
 		],

@@ -10,6 +10,11 @@ module.exports = {
             }
         }
     },
+    authToken: {
+        tokenExpirationTimeSec: 3000,
+        version: 1,
+        secretKey: 'my-secret-key'
+    },
     node_env: process.env.NODE_ENV || 'production',
     database: {
         uri: 'mongodb://localhost:27017/shop',

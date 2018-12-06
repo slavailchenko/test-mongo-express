@@ -48,7 +48,7 @@ module.exports = {
     clientModel.findByIdAndRemove({_id: req.params.id})
     .then(client => {
       if (!client) throw new ServerError(404, 'Client not found');
-      res.json(`Client with id=${req.params.id} deleted`);
+      res.status(200).json(`Client with id=${req.params.id} deleted`);
     }).catch(next);
   }
 

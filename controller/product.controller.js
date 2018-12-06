@@ -51,14 +51,13 @@ module.exports = {
       if (reply) {
         reply = JSON.parse(reply);
         res.json(reply);
-      }
-      else { 
+      } else { 
         productModel.find({ title: { $regex: query.toLowerCase().trim(),  $options: 'ig' }}).
         then(product => {
           if (!product) return next (ServerError(404, 'Products not founded'));
           res.json(product);
           redis.setAsync(query, JSON.stringify(product))
-          .then(result => console.log(`Key "${query}" added in Redis cache`))
+          .then(result => log.info(`Key "${query}" added in Redis cache`))
           .catch(next);
         })
       }
