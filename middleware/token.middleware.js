@@ -17,7 +17,7 @@ module.exports = {
             log.info(`Client ${req.currentClient.clientId} logged in with token: ${token}`); 
             next();
         } else {
-            return next(new ServerError(401, `Token is invalid for client ${req.currentClient._id}`))
+            return next(new ServerError(401, `Token is invalid for client`))
         }
     },
 

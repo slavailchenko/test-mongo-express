@@ -7,6 +7,7 @@ const ServerError = require('../lib/errors');
 module.exports = {
 
     currentClient: (req, res, next) => {
+        
         clientModel.findById({_id: req.currentClient.clientId}).lean().
         then(client => {
             if (!client) throw new ServerError(404, 'Client not found');

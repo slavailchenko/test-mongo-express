@@ -4,7 +4,7 @@ const orders = require ('../controller/order.controller');
 const products = require ('../controller/product.controller');
 const clientToken = require('../middleware/token.middleware');
 
-router.use('*', clientToken.checkTokenClient);
+router.use('/', clientToken.checkTokenClient);
 router.get('/', currentClient.currentClient);
 router.get('/products', products.getProductByTitleCache);
 router.get('/orders', currentClient.getOrdersClient);
