@@ -11,20 +11,26 @@ module.exports = {
 			version: config.authToken.version 
 		});
 		log.info(dataAll);
-		const token = jwt.sign(dataAll, config.authToken.secretKey,
-			{ expiresIn: config.authToken.tokenExpirationTimeSec});
-		return token;
+		return new Promise ((resolve, reject) => {
+			jwt.sign(dataAll, config.authToken.secretKey,
+				{ expiresIn: config.authToken.tokenExpirationTimeSec}, (err, token) => {
+					if (err) return reject(err);
+					resolve (token);
+				});
+		})
 	},
 
 	verifyToken: (token) => {
-		return jwt.verify(token, config.authToken.secretKey, (err, decoded) => {
-			if (err) {
-				return new ServerError(401, 'Invalid auth token')
-			} else {
-				log.info(decoded);
-				log.info(`Decoded ${decoded.role}`);
-				return decoded;
-			}
+		return new Promise (resolve => { 
+			jwt.verify(token, config.authToken.secretKey, (err, decoded) => {
+				if (err) {
+					return new ServerError(401, 'Invalid auth token')
+				} else {
+					log.info(decoded);
+					log.info(`Decoded ${decoded.role}`);
+					resolve(decoded);
+				}
+			})
 		})
 	}
 }

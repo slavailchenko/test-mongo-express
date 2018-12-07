@@ -7,14 +7,20 @@ module.exports = {
 
     generateTokenClient: (req, res, next) => {
         let data = Object.assign ({}, {clientId: req.params.id, role: 'client'});
-        const token = tokenJWT.generateToken(data);
-        res.json({token: token})
+        tokenJWT.generateToken(data)
+        .then(token => {
+            res.json({token: token})
+        })
+        .catch(next);
     },
 
     generateTokenSystem: (req, res, next) => {
         let data = Object.assign ({}, {role: 'system'});
-        const token = tokenJWT.generateToken(data);
-        res.json({token: token});
+        tokenJWT.generateToken(data)
+        .then(token => {
+            res.json({token: token})
+        })
+        .catch(next);
     },
 
     currentUser: (req, res, next) => {
