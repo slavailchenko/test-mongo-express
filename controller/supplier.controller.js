@@ -25,7 +25,8 @@ module.exports = {
     .then(supplier => {
       if (!supplier) throw new ServerError(404, 'Supplier not found');
       res.json(supplier);
-    }).catch(next);
+    })
+    .catch(next);
   },
 
   updateSupplier: (req, res, next) => {
@@ -33,7 +34,8 @@ module.exports = {
     .then(supplier => {
       if (!supplier) throw new ServerError(404, 'Supplier not found');
       res.status(200).json(`Supplier with id=${req.params.id} updated`);
-    }).catch(next);
+    })
+    .catch(next);
   },
 
   removeSupplier: (req, res, next) => {
@@ -41,7 +43,8 @@ module.exports = {
     .then(supplier => {
       if (!supplier) throw new ServerError(404, 'Supplier not found');
       res.json(`Supplier with id=${req.params.id} deleted`);
-    }).catch(next);
+    })
+    .catch(next);
   }
 
 }

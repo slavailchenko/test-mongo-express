@@ -3,6 +3,9 @@ const valid = require('validator');
 const { Schema } = mongoose;
 const { ObjectId } = Schema.Types;
 
+const ServerError = require('../lib/errors');
+const supplierModel = require ('../models/suppliers.model');
+
 const valuesCategories = {
     values: ['Phones', 'Tablet'],
     message: `Please select correct value`
@@ -93,6 +96,36 @@ const productSchema = new Schema({
 {
     timestamps: true,
     versionKey: false
+});
+
+productSchema.pre('findOne', function() {
+    let id = this._conditions._id._id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new ServerError(422, `Invalid ${id}. Must be a single String of 12 bytes or a string of 24 hex characters`)
+    }
+})
+
+productSchema.pre('findOneAndUpdate', function(next) {
+    let id = this._conditions._id._id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        next (new ServerError(422, `Invalid ${id}. Must be a single String of 12 bytes or a string of 24 hex characters`))
+    } else next();
+})
+
+productSchema.pre('findOneAndRemove', function (next) {
+    let id = this._conditions._id._id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        next (new ServerError(422, `Invalid ${id}. Must be a single String of 12 bytes or a string of 24 hex characters`))
+    } else next();
+});
+
+productSchema.pre('save', function (next) {
+    supplierModel.findById({
+        _id: this.supplier_id.toString()
+    }, (err, docs) => {
+        (docs._id.toString() == this.supplier_id) ? next() : next (new ServerError(404, `Supplier ${this.supplier_id} don't exist in suppliers`));
+    });
+
 });
 
 

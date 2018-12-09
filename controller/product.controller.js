@@ -19,12 +19,9 @@ redis.on('error', (err) => {
 module.exports = {
 
   newProduct: (req, res, next) => {
-    supplierModel.findById({_id: req.body.supplier_id})
-    .then(supplier => {
-      if (!supplier) throw new ServerError(404, 'Supplier not founded');
-      productModel.create(req.body)
-      .then(productSaved => res.status(201).json({product: productSaved}))
-    }).catch(next);
+    productModel.create(req.body)
+    .then(productSaved => res.status(201).json({product: productSaved}))
+    .catch(next);
   },
 
   getAllProducts: (req, res, next) => {
@@ -33,7 +30,8 @@ module.exports = {
     .then(products => {
       if (!products.length) throw new ServerError(404, 'Products not founded');
       res.json(products);
-    }).catch(next);
+    })
+    .catch(next);
   },
 
   getProductById: (req, res, next) => {
@@ -41,7 +39,8 @@ module.exports = {
     .then(product => {
       if (!product) throw new ServerError(404, 'Product not found');
       res.json (product);
-    }).catch(next);
+    })
+    .catch(next);
   },
 
   getProductByTitleCache: (req, res, next) => {
@@ -61,7 +60,8 @@ module.exports = {
           .catch(next);
         })
       }
-    }).catch(next);
+    })
+    .catch(next);
   },
 
   getCompany: (req, res, next) => {
@@ -77,12 +77,14 @@ module.exports = {
     supplierModel.findById({_id: req.body.supplier_id})
     .then(supplier => {
       if (!supplier) throw new ServerError(404, 'Supplier not founded');
-      productModel.update({_id: req.params.id}, req.body)
+      productModel.findByIdAndUpdate({_id: req.params.id}, req.body)
       .then(product => {
         if (!product) throw new ServerError(404, 'Product not found');
         res.status(200).json(`Product with id=${req.params.id} updated`)
       })
-    }).catch(next);
+      .catch(next);
+    })
+    .catch(next);
   },
 
   removeProduct: (req, res, next) => {
@@ -90,6 +92,7 @@ module.exports = {
     .then(product => {
       if (!product) throw new ServerError(404, 'Product not found');
       res.json(`Product with id=${req.params.id} deleted`);
-    }).catch(next);
+    })
+    .catch(next);
   }
 }

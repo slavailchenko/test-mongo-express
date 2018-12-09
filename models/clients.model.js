@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const { ObjectId } = Schema.Types;
 
+const ServerError = require('../lib/errors');
+
 const validateEmail = (email) => {
     let r = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     return r.test(email)
@@ -79,6 +81,27 @@ const clientSchema = new Schema({
 {
     timestamps: true,
     versionKey: false
+});
+
+clientSchema.pre('findOne', function() {
+    let id = this._conditions._id._id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new ServerError(422, `Invalid ${id}. Must be a single String of 12 bytes or a string of 24 hex characters`)
+    }
+})
+
+clientSchema.pre('findOneAndUpdate', function(next) {
+    let id = this._conditions._id._id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        next (new ServerError(422, `Invalid ${id}. Must be a single String of 12 bytes or a string of 24 hex characters`))
+    } else next();
+})
+
+clientSchema.pre('findOneAndRemove', function (next) {
+    let id = this._conditions._id._id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        next (new ServerError(422, `Invalid ${id}. Must be a single String of 12 bytes or a string of 24 hex characters`))
+    } else next();
 });
 
 module.exports = mongoose.model('client', clientSchema);

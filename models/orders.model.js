@@ -54,6 +54,27 @@ const orderSchema = new Schema({
     versionKey: false
 });
 
+orderSchema.pre('findOne', function() {
+    let id = this._conditions._id._id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new ServerError(422, `Invalid ${id}. Must be a single String of 12 bytes or a string of 24 hex characters`)
+    }
+})
+
+orderSchema.pre('findOneAndUpdate', function(next) {
+    let id = this._conditions._id._id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        next (new ServerError(422, `Invalid ${id}. Must be a single String of 12 bytes or a string of 24 hex characters`))
+    } else next();
+})
+
+orderSchema.pre('findOneAndRemove', function (next) {
+    let id = this._conditions._id._id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        next (new ServerError(422, `Invalid ${id}. Must be a single String of 12 bytes or a string of 24 hex characters`))
+    } else next();
+});
+
 orderSchema.pre('save', function (next) {
 
     productModel.find({

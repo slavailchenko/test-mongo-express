@@ -10,7 +10,7 @@ module.exports = {
 			date: new Date (),
 			version: config.authToken.version 
 		});
-		log.info(dataAll);
+		// log.info(dataAll);
 		return new Promise ((resolve, reject) => {
 			jwt.sign(dataAll, config.authToken.secretKey,
 				{ expiresIn: config.authToken.tokenExpirationTimeSec}, (err, token) => {
@@ -21,12 +21,12 @@ module.exports = {
 	},
 
 	verifyToken: (token) => {
-		return new Promise (resolve => { 
+		return new Promise ((resolve, reject) => { 
 			jwt.verify(token, config.authToken.secretKey, (err, decoded) => {
 				if (err) {
-					return new ServerError(401, 'Invalid auth token')
+					return reject(new ServerError(401, 'Invalid token')); 
 				} else {
-					log.info(decoded);
+					// log.info(decoded);
 					log.info(`Decoded ${decoded.role}`);
 					resolve(decoded);
 				}
