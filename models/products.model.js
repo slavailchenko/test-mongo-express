@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const valid = require('validator');
 const { Schema } = mongoose;
 const { ObjectId } = Schema.Types;
 
@@ -51,11 +50,6 @@ const productSchema = new Schema({
     },  
     url: {
     	type: String,
-        validate: {
-            validator: valid.isURL,
-            message: 'Is not a valid URL',
-            isAsync: false
-        },
         trim: true
     },
     name_sub_category: {
@@ -123,7 +117,7 @@ productSchema.pre('save', function (next) {
     supplierModel.findById({
         _id: this.supplier_id.toString()
     }, (err, docs) => {
-        (docs._id.toString() == this.supplier_id) ? next() : next (new ServerError(404, `Supplier ${this.supplier_id} don't exist in suppliers`));
+        (docs._id.toString() === this.supplier_id) ? next() : next (new ServerError(404, `Supplier ${this.supplier_id} don't exist in suppliers`));
     });
 
 });

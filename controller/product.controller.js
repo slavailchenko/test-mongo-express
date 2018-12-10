@@ -7,6 +7,8 @@ const redisClient = require('redis').createClient;
 const redis = redisClient();
 const bluebird = require('bluebird');
 
+const { check, validationResult } = require('express-validator/check');
+
 redis.on('connect', () => {
   log.info('Redis client connected');
   bluebird.promisifyAll(redis)
@@ -17,6 +19,22 @@ redis.on('error', (err) => {
 });
 
 module.exports = {
+
+  arrayOfValidation: [check('title').not().isEmpty(),
+                      check('article').not().isEmpty().trim(),
+                      check('description').not().isEmpty().trim(),
+                      check('price').not().isEmpty(),
+                      check('days').not().isEmpty(),
+                      check('url').isURL(),
+                      check('supplier_id').isMongoId()
+                      ],
+
+  validationFields: (req, res, next) => {  
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({errors: errors.array()});
+    } else next();
+  },
 
   newProduct: (req, res, next) => {
     productModel.create(req.body)
@@ -51,13 +69,13 @@ module.exports = {
         reply = JSON.parse(reply);
         res.json(reply);
       } else { 
-        productModel.find({ title: { $regex: query.toLowerCase().trim(),  $options: 'ig' }}).
-        then(product => {
+        productModel.find({ title: { $regex: query.toLowerCase().trim(),  $options: 'ig' }})
+        .then(product => {
           if (!product) return next (ServerError(404, 'Products not founded'));
           res.json(product);
           redis.setAsync(query, JSON.stringify(product))
-          .then(result => log.info(`Key "${query}" added in Redis cache`))
-          .catch(next);
+            .then(result => log.info(`Key "${query}" added in Redis cache`))
+            .catch(next);
         })
       }
     })

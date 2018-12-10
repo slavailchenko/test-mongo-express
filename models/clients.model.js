@@ -4,10 +4,10 @@ const { ObjectId } = Schema.Types;
 
 const ServerError = require('../lib/errors');
 
-const validateEmail = (email) => {
-    let r = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    return r.test(email)
-};
+// const validateEmail = (email) => {
+//     let r = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+//     return r.test(email)
+// };
 
 const valuesStatus_reg = {
     values: ['Full', 'Express'],
@@ -34,10 +34,10 @@ const clientSchema = new Schema({
     email: {
         type: String,        
         index: {unique: true},
-        required: 'Email address is required',
-        validate: [validateEmail, 'Please fill a valid email address'],
-        match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 
-        'Please fill a valid email address'],
+        required: true,
+        // validate: [validateEmail, 'Please fill a valid email address'],
+        // match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 
+        // 'Please fill a valid email address'],
         trim: true
     },
     phone: {

@@ -2,7 +2,24 @@ const supplierModel = require ('../models/suppliers.model')
 const ServerError = require('../lib/errors');
 const log = require('../service/log.service');
 
+const { check, validationResult } = require('express-validator/check');
+
 module.exports = {
+
+  arrayOfValidation: [check('company').not().isEmpty(),
+                      check('manager').not().isEmpty().trim(),
+                      check('email').isEmail().normalizeEmail(),
+                      check('phone').not().isEmpty().trim(),
+                      check('adress').not().isEmpty(),
+                      check('url').isURL()
+                      ],
+
+  validationFields: (req, res, next) => {  
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({errors: errors.array()});
+    } else next();
+  },
 
   newSupplier: (req, res, next) => {
     supplierModel.create(req.body)

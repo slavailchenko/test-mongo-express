@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const valid = require('validator');
 const { Schema } = mongoose;
 const { ObjectId } = Schema.Types;
 
@@ -20,12 +19,7 @@ const supplierSchema = new Schema({
     email: {
         type: String,        
         unique: true,
-        required: 'Email address is required',
-        validate: {
-            validator: valid.isEmail,
-            message: 'Is not a valid email',
-            isAsync: false
-        },
+        required: true,
         trim: true
     },
     phone: {
@@ -41,11 +35,6 @@ const supplierSchema = new Schema({
     url: {
     	type: String,
         required: false,
-        validate: {
-            validator: valid.isURL,
-            message: 'Is not a valid URL',
-            isAsync: false
-        },
         trim: true
     }
 }, 

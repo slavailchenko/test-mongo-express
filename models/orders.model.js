@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const valid = require('validator');
 const productModel = require ('../models/products.model');
 const clientModel = require ('../models/clients.model');
 const ServerError = require('../lib/errors');
@@ -104,7 +103,7 @@ orderSchema.pre('save', function (next) {
     clientModel.findById({
         _id: this.client_id.toString()
     }, (err, docs) => {
-        (docs._id.toString() == this.client_id) ? next() : next (new ServerError(404, `Client ${this.client_id} don't exist in clients`));
+        (docs._id.toString() === this.client_id) ? next() : next (new ServerError(404, `Client ${this.client_id} don't exist in clients`));
     });
 
 });

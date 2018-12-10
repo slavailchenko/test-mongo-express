@@ -13,7 +13,7 @@ const dev = {
         }
     },
     authToken: {
-        tokenExpirationTimeSec: 3000,
+        tokenExpirationTimeSec: 30000,
         version: 1,
         secretKey: 'my-secret-key'
     },
