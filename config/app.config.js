@@ -40,9 +40,9 @@ const production = {
         }
     },
     authToken: {
-        tokenExpirationTimeSec: 2000,
+        tokenExpirationTimeSec: process.env.PROD_EXP_TIME_TKN || 2000,
         version: 1,
-        secretKey: 'test-secret-key'
+        secretKey: process.env.PROD_SC_KEY ||'test-secret-key'
     },
     database: {
         uri: 'mongodb://localhost:27017/shop',

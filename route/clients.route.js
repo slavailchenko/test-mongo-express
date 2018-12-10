@@ -2,7 +2,7 @@ const router = require('express').Router();
 const clients = require ('../controller/client.controller');
 const currentClient = require('../controller/currentClient.controller');
 const clientToken = require('../middleware/token.middleware');
-const middleware_hasRole = clientToken.hasRole('system');
+const middleware_hasRole = clientToken.hasRole('admin');
 
 router.use('/', clientToken.checkToken);
 router.use('/all', middleware_hasRole);

@@ -17,7 +17,7 @@ module.exports = {
                 req.currentClient = decoded;
                 log.info(`Client ${req.currentClient.clientId} logged in with token: ${token}`); 
                 next();
-            } else if (decoded.role === 'system') {
+            } else if (decoded.role === 'admin') {
                 log.info(`Admin logged in with token: ${token}`);
                 req.currentClient = decoded;
                 next();
@@ -30,7 +30,7 @@ module.exports = {
 
     hasRole: (role) => {
         return function(req, res, next) {
-            console.log(role);
+            // console.log(role);
             if (role === req.currentClient.role) {
                 next()
             } else return next(new ServerError(403, 'Forbidden request forbidden by administrative rules'));        

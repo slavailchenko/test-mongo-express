@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const suppliers = require ('../controller/supplier.controller');
 const clientToken = require('../middleware/token.middleware');
-const middleware_hasRole = clientToken.hasRole('system');
+const middleware_hasRole = clientToken.hasRole('admin');
 
 router.use('/', clientToken.checkToken, middleware_hasRole);
 router.get('/', suppliers.getAllSuppliers);

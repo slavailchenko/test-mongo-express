@@ -14,8 +14,8 @@ module.exports = {
         .catch(next);
     },
 
-    generateTokenSystem: (req, res, next) => {
-        let data = Object.assign ({}, {role: 'system'});
+    generateTokenAdmin: (req, res, next) => {
+        let data = Object.assign ({}, {role: 'admin'});
         tokenJWT.generateToken(data)
         .then(token => {
             res.json({token: token})
