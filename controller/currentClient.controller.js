@@ -29,7 +29,7 @@ module.exports = {
             select: 'title price'
         }])
         .then(result => {
-            if (!result) throw new ServerError(404, 'Orders not found');
+            if (!result.length) throw new ServerError(404, 'Orders not found');
             let data = [];
             result.forEach((item) => {
               data.push({
