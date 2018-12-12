@@ -14,12 +14,14 @@ module.exports = {
         tokenJWT.verifyToken(token)
         .then(decoded => {
             if (decoded.role === 'client') {
+                // console.log(req.currentClient);
                 req.currentClient = decoded;
+                console.log(req.currentClient);
                 log.info(`Client ${req.currentClient.clientId} logged in with token: ${token}`); 
                 next();
             } else if (decoded.role === 'admin') {
-                log.info(`Admin logged in with token: ${token}`);
                 req.currentClient = decoded;
+                log.info(`Admin logged in with token: ${token}`);
                 next();
             } else {
                 return next(new ServerError(401, `Token is invalid`))
@@ -28,9 +30,18 @@ module.exports = {
         .catch(next);
     },
 
+    checkLogin: (req, res, next) => {
+
+        console.log(req.currentClient.isActive);
+        if (req.currentClient.isActive) {
+            next()
+        } else return next (new ServerError(401, 'Client is not logged'))
+        
+    },
+
     hasRole: (role) => {
         return function(req, res, next) {
-            // console.log(role);
+            console.log(role);
             if (role === req.currentClient.role) {
                 next()
             } else return next(new ServerError(403, 'Forbidden request forbidden by administrative rules'));        

@@ -21,6 +21,7 @@ mongoose.connect().then(()=> new Promise ((res, rej) => {
   app.use(bodyParser.json({limit: "50mb"}));
   app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:500}));
   app.use(expressValidator());
+  // app.use(cors(config.server.cors.all));
 
   app.disable('x-powered-by');
 
