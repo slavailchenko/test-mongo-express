@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken-refresh');
 const clientModel = require ('../models/clients.model');
 const tokenJWT = require('../service/jwt.service');
 const ServerError = require('../lib/errors');
@@ -22,16 +23,24 @@ module.exports = {
             if (!client) {
                 throw new ServerError(404, 'Client not found');
             };
-            let data = Object.assign ({}, {clientId: client[0]._id, isActive: true, role: 'client'});
+            let data = Object.assign ({}, {clientId: client[0]._id, role: 'client'});
 
             return tokenJWT.generateToken(data)
             .then(token => ({client, token}))
             .catch(next)
         })
         .then(({client, token}) => {
-            // req.currentClient.isActive = true;
+
+            const refreshToken = jwt.sign({
+                clientId: client[0]._id, 
+                role: 'client',
+                date: new Date (),
+                version: config.authToken.version}, 
+                config.authToken.refreshSecretKey, 
+                {expiresIn: config.authToken.refreshTokenExpirationTimeSec});
+
             log.info(`Client with email "${client[0].email}" have token: "${token}"`);
-            res.status(201).json({client, token});
+            res.status(201).json({client, token, refreshToken});
         })
         .catch(next);
     },
@@ -45,13 +54,49 @@ module.exports = {
             return tokenJWT.generateToken({clientId: clientSaved._id, role: 'client'})
             .then(token => ({clientSaved, token}))
             .then(({clientSaved, token}) => {
-                log.info(`Client "${clientSaved.email}"" logged in with token: "${token}"`);
+                log.info(`Client "${clientSaved.email}" logged in with token: "${token}"`);
                 res.status(201).json({client: clientSaved, token});
             })
             .catch(next)
         })
         .catch(next);
     },
+
+    refresh: (req, res, next) => {
+        new Promise((resolve, reject) => {
+            jwt.verify(
+                req.sanitizeBody('refresh_token').trim(),
+                config.authToken.refreshSecretKey,
+                (err, decoded) => {
+                    if (err || !decoded.clientId) {
+                        return reject(new ServerError(401, 'Invalid token'));
+                    }
+                    resolve();
+                }) 
+        })
+        .then(() => req.headers['x-access-token'])
+        .then(token => jwt.decode(token, {complete: true}))
+        .then(decodedToken => {
+            req.currentClient = decodedToken.payload;
+            return jwt.refresh(decodedToken, 
+            config.authToken.tokenExpirationTimeSec, 
+            config.authToken.secretKey)           
+        })
+        .then(newToken => {
+            res.status(200).json({
+            access_token: newToken,
+            expires_in: config.authToken.tokenExpirationTimeSec,
+            refresh_token: jwt.sign({
+                clientId: req.currentClient.clientId, 
+                role: 'client',
+                date: new Date (),
+                version: config.authToken.version}, 
+                config.authToken.refreshSecretKey, 
+                {expiresIn: config.authToken.refreshTokenExpirationTimeSec})
+        })})
+        .catch(next)
+    },
+
 
     logout: (req, res, next) => {
 

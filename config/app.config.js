@@ -13,9 +13,11 @@ const dev = {
         }
     },
     authToken: {
-        tokenExpirationTimeSec: 30000,
+        tokenExpirationTimeSec: 3000,
         version: 1,
-        secretKey: 'my-secret-key'
+        secretKey: 'my-secret-key',
+        refreshSecretKey: 'refresh-secret-key',
+        refreshTokenExpirationTimeSec: 2592000
     },
     database: {
         uri: 'mongodb://localhost:27017/shop',
@@ -42,7 +44,9 @@ const production = {
     authToken: {
         tokenExpirationTimeSec: process.env.PROD_EXP_TIME_TKN || 2000,
         version: 1,
-        secretKey: process.env.PROD_SC_KEY ||'test-secret-key'
+        secretKey: process.env.PROD_SC_KEY ||'test-secret-key',
+        refreshSecretKey: process.env.PROD_RF_SC_KEY || 'refresh-secret-key',
+        refreshTokenExpirationTimeSec: process.env.PROD_EXP_TIME_RF_TKN || 2592000
     },
     database: {
         uri: 'mongodb://localhost:27017/shop',
@@ -55,8 +59,8 @@ const production = {
 };
 
 const config = {
-   dev,
-   production
+ dev,
+ production
 };
 
 module.exports = config[env];

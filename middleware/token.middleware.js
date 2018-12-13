@@ -9,14 +9,13 @@ module.exports = {
     checkToken: (req, res, next) => {
 
         const token = req.headers['x-access-token'];
-        if (!token) return next(new ServerError(401, 'No authorization token was found'));
+        if (!token) 
+            return next(new ServerError(401, 'No authorization token was found'));
 
         tokenJWT.verifyToken(token)
         .then(decoded => {
             if (decoded.role === 'client') {
-                // console.log(req.currentClient);
                 req.currentClient = decoded;
-                console.log(req.currentClient);
                 log.info(`Client ${req.currentClient.clientId} logged in with token: ${token}`); 
                 next();
             } else if (decoded.role === 'admin') {
