@@ -54,8 +54,17 @@ module.exports = {
             return tokenJWT.generateToken({clientId: clientSaved._id, role: 'client'})
             .then(token => ({clientSaved, token}))
             .then(({clientSaved, token}) => {
+
+                const refreshToken = jwt.sign({
+                    clientId: clientSaved[0]._id, 
+                    role: 'client',
+                    date: new Date (),
+                    version: config.authToken.version}, 
+                    config.authToken.refreshSecretKey, 
+                    {expiresIn: config.authToken.refreshTokenExpirationTimeSec});
+
                 log.info(`Client "${clientSaved.email}" logged in with token: "${token}"`);
-                res.status(201).json({client: clientSaved, token});
+                res.status(201).json({client: clientSaved, token, refreshToken});
             })
             .catch(next)
         })
@@ -79,21 +88,21 @@ module.exports = {
         .then(decodedToken => {
             req.currentClient = decodedToken.payload;
             return jwt.refresh(decodedToken, 
-            config.authToken.tokenExpirationTimeSec, 
-            config.authToken.secretKey)           
+                config.authToken.tokenExpirationTimeSec, 
+                config.authToken.secretKey)           
         })
         .then(newToken => {
             res.status(200).json({
-            access_token: newToken,
-            expires_in: config.authToken.tokenExpirationTimeSec,
-            refresh_token: jwt.sign({
-                clientId: req.currentClient.clientId, 
-                role: 'client',
-                date: new Date (),
-                version: config.authToken.version}, 
-                config.authToken.refreshSecretKey, 
-                {expiresIn: config.authToken.refreshTokenExpirationTimeSec})
-        })})
+                access_token: newToken,
+                expires_in: config.authToken.tokenExpirationTimeSec,
+                refresh_token: jwt.sign({
+                    clientId: req.currentClient.clientId, 
+                    role: 'client',
+                    date: new Date (),
+                    version: config.authToken.version}, 
+                    config.authToken.refreshSecretKey, 
+                    {expiresIn: config.authToken.refreshTokenExpirationTimeSec})
+            })})
         .catch(next)
     },
 
@@ -124,14 +133,5 @@ module.exports = {
         })
         .catch(next);
     }
-
-    // generateTokenClient: (req, res, next) => {
-    //     let data = Object.assign ({}, {clientId: req.params.id, role: 'client'});
-    //     tokenJWT.generateToken(data)
-    //     .then(token => {
-    //         res.json({token: token})
-    //     })
-    //     .catch(next);
-    // },
 
 };
