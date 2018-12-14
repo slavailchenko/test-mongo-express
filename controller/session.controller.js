@@ -136,7 +136,7 @@ module.exports = {
 
     deleteTokensFromBlackList: (req, res, next) => {
         blackListModel.deleteMany({
-        'createdAt': { $lt: new Date (new Date().getTime() - config.authToken.tokenExpirationTimeSec) } })
+        'createdAt': { $lt: new Date (new Date().getTime() - (config.authToken.tokenExpirationTimeSec*1000)) } })
         .then((tokens) => {
             log.info(`Recores removed ${tokens.n} from blacklist`);
             res.status(200).json({
