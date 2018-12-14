@@ -129,7 +129,19 @@ module.exports = {
         clientModel.findById({_id: req.currentClient.clientId}).lean()
         .then(client => {
             if (!client) throw new ServerError(404, 'Client not founded');
-            res.json({client: client})
+            res.status(200).json({client: client})
+        })
+        .catch(next);
+    },
+
+    deleteTokensFromBlackList: (req, res, next) => {
+        blackListModel.deleteMany({
+        'createdAt': { $lt: new Date (new Date().getTime() - config.authToken.tokenExpirationTimeSec) } })
+        .then((tokens) => {
+            log.info(`Recores removed ${tokens.n} from blacklist`);
+            res.status(200).json({
+                message: `Blacklist tokens is clear`
+            })
         })
         .catch(next);
     }
