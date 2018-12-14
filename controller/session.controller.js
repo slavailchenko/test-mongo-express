@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken-refresh');
 const clientModel = require ('../models/clients.model');
+const blackListModel = require ('../models/blacklist.model');
 const tokenJWT = require('../service/jwt.service');
 const ServerError = require('../lib/errors');
 const log = require('../service/log.service')(module);
@@ -72,6 +73,7 @@ module.exports = {
     },
 
     refresh: (req, res, next) => {
+
         new Promise((resolve, reject) => {
             jwt.verify(
                 req.sanitizeBody('refresh_token').trim(),
@@ -109,19 +111,17 @@ module.exports = {
 
     logout: (req, res, next) => {
 
-        clientModel.find({email: req.body.email}).lean()
-        .then(client => {
-            console.log(client);
-            if (!client) {
-                throw new ServerError(404, 'Client not found');
-            } else if (!req.currentClient.clientId) {
-                throw new ServerError(404, 'Client dont logged')
-            } else {
-                req.currentClient.isActive = false;
-                console.log(req.currentClient);
-                next();
-            }
+        if(!req.currentClient) {
+            throw new ServerError(401, `Client "${req.currentClient.clientId}" not logged`)
+        };
+
+        blackListModel.create({
+            token: req.headers['x-access-token'],
+            refreshToken: req.body.refresh_token
         })
+        .then(tokenSaved => {
+            log.info(`Token added in blacklist`);
+            res.status(201).json(`Client "${req.currentClient.clientId}" logout`)})
         .catch(next);
     },
 

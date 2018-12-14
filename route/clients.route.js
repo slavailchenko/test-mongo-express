@@ -8,11 +8,16 @@ const middleware_hasRole = clientToken.hasRole('admin');
 
 router.post('/login', clients.arrayOfValidation[0], clients.validationFields, session.login);
 router.post('/registration', clients.arrayOfValidation, clients.validationFields, session.registration);
-router.patch('/refresh', [check('refresh_token').not().isEmpty()], clients.validationFields, session.refresh);
+
+router.patch('/refresh', [check('refresh_token').not().isEmpty()], 
+                            clients.validationFields, 
+                            clientToken.checkRefreshToken, 
+                            session.refresh);
 
 router.use('/', clientToken.checkToken);
 
-// router.post('/logout', clients.arrayOfValidation[0], clients.validationFields, session.logout);
+router.post('/logout', clients.arrayOfValidation[0], 
+    clients.validationFields, session.logout);
 
 router.all('/me', clientToken.hasRole('client'));
 router.get('/me', currentClient.currentClient);
